@@ -14,39 +14,12 @@ async function migrate() {
       name TEXT NOT NULL,
       company TEXT,
       locale TEXT NOT NULL DEFAULT 'pt-BR',
+      phone TEXT,
+      telegram_chat_id TEXT,
       status TEXT NOT NULL DEFAULT 'active',
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     )
   `);
-
-  try {
-    await client.execute(`ALTER TABLE contacts ADD COLUMN locale TEXT NOT NULL DEFAULT 'pt-BR'`);
-  } catch { /* exists */ }
-
-  try {
-    await client.execute(`ALTER TABLE contacts ADD COLUMN phone TEXT`);
-  } catch { /* exists */ }
-  try {
-    await client.execute(`ALTER TABLE contacts ADD COLUMN telegram_chat_id TEXT`);
-  } catch { /* exists */ }
-  try {
-    await client.execute(`ALTER TABLE campaigns ADD COLUMN channel TEXT NOT NULL DEFAULT 'email'`);
-  } catch { /* exists */ }
-  try {
-    await client.execute(`ALTER TABLE templates ADD COLUMN status TEXT NOT NULL DEFAULT 'active'`);
-  } catch { /* exists */ }
-  try {
-    await client.execute(`ALTER TABLE campaigns ADD COLUMN archived_at TEXT`);
-  } catch { /* exists */ }
-  try {
-    await client.execute(`ALTER TABLE emails ADD COLUMN tracking_token TEXT`);
-  } catch { /* exists */ }
-  try {
-    await client.execute(`ALTER TABLE templates ADD COLUMN preheader TEXT NOT NULL DEFAULT ''`);
-  } catch { /* exists */ }
-  try {
-    await client.execute(`ALTER TABLE campaigns ADD COLUMN sender TEXT`);
-  } catch { /* exists */ }
 
   await client.execute(`
     CREATE TABLE IF NOT EXISTS messages (
@@ -69,6 +42,7 @@ async function migrate() {
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
       subject TEXT NOT NULL,
+      preheader TEXT NOT NULL DEFAULT '',
       blocks TEXT NOT NULL,
       status TEXT NOT NULL DEFAULT 'active',
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
@@ -85,6 +59,7 @@ async function migrate() {
       status TEXT NOT NULL DEFAULT 'draft',
       archived_at TEXT,
       sent_at TEXT,
+      sender TEXT,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     )
   `);
@@ -112,6 +87,26 @@ async function migrate() {
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     )
   `);
+
+  // Legacy upgrades for databases created before columns were in CREATE TABLE
+  const alters = [
+    `ALTER TABLE contacts ADD COLUMN locale TEXT NOT NULL DEFAULT 'pt-BR'`,
+    `ALTER TABLE contacts ADD COLUMN phone TEXT`,
+    `ALTER TABLE contacts ADD COLUMN telegram_chat_id TEXT`,
+    `ALTER TABLE campaigns ADD COLUMN channel TEXT NOT NULL DEFAULT 'email'`,
+    `ALTER TABLE templates ADD COLUMN status TEXT NOT NULL DEFAULT 'active'`,
+    `ALTER TABLE campaigns ADD COLUMN archived_at TEXT`,
+    `ALTER TABLE emails ADD COLUMN tracking_token TEXT`,
+    `ALTER TABLE templates ADD COLUMN preheader TEXT NOT NULL DEFAULT ''`,
+    `ALTER TABLE campaigns ADD COLUMN sender TEXT`,
+  ];
+  for (const sql of alters) {
+    try {
+      await client.execute(sql);
+    } catch {
+      /* column exists */
+    }
+  }
 
   const existing = await client.execute("SELECT id FROM contacts LIMIT 1");
   if (existing.rows.length === 0) {

@@ -4,7 +4,7 @@
 
 Built by [Leonardt (@leovenom)](https://github.com/leovenom) to demonstrate product engineering on a developer-first email platform.
 
-**Live demo:** _add your Vercel URL_
+**Live demo:** [send-studio.vercel.app](https://send-studio.vercel.app/)
 
 ![Next.js](https://img.shields.io/badge/Next.js-16-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)

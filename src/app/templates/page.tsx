@@ -14,6 +14,11 @@ import { accentAt, accentToneStyles } from "@/lib/accent-styles";
 import { cn } from "@/lib/utils";
 import { apiFetch } from "@/lib/api-fetch";
 import type { Template } from "@/lib/db/schema";
+
+type TemplateListItem = Pick<
+  Template,
+  "id" | "name" | "subject" | "preheader" | "status" | "createdAt" | "updatedAt"
+> & { blockCount?: number; blocks?: string };
 import {
   Archive,
   ArchiveRestore,
@@ -33,7 +38,7 @@ const LIBRARY_TAB_PREFIX = "templates-library";
 export default function TemplatesPage() {
   const t = useT();
   const router = useRouter();
-  const [templates, setTemplates] = useState<Template[]>([]);
+  const [templates, setTemplates] = useState<TemplateListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<Tab>("active");
   const [actionError, setActionError] = useState<string | null>(null);
@@ -250,13 +255,15 @@ export default function TemplatesPage() {
           ) : (
             <div className="divide-y divide-border">
               {filtered.map((template, i) => {
-                const blockCount = (() => {
-                  try {
-                    return JSON.parse(template.blocks).length;
-                  } catch {
-                    return 0;
-                  }
-                })();
+                const blockCount =
+                  template.blockCount ??
+                  (() => {
+                    try {
+                      return JSON.parse(template.blocks ?? "[]").length;
+                    } catch {
+                      return 0;
+                    }
+                  })();
                 const isArchived = template.status === "archived";
                 const tone = accentAt(i);
                 const style = accentToneStyles[tone];

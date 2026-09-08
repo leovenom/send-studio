@@ -18,6 +18,7 @@ import { getResend } from "@/lib/resend";
 import { createTrackingToken } from "@/lib/tracking";
 import type { EmailBlock } from "@/lib/blocks";
 import { enforceRateLimit } from "@/lib/rate-limit";
+import { jsonList } from "@/lib/api-list-response";
 
 const channelSchema = z.enum(["email", "whatsapp", "telegram"]);
 
@@ -41,7 +42,7 @@ export async function GET(req: NextRequest) {
     .orderBy(campaigns.createdAt);
 
   const filtered = includeArchived ? all : all.filter((c) => !c.archivedAt);
-  return NextResponse.json(
+  return jsonList(
     filtered.map((c) => ({
       ...c,
       senderSummary: formatCampaignSenderSummary(parseCampaignSender(c.sender)),

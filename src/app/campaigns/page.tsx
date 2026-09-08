@@ -13,6 +13,11 @@ import { CHANNELS, type MessageChannel } from "@/lib/messaging/channels";
 import { accentAt, accentToneStyles, type AccentTone } from "@/lib/accent-styles";
 import type { UiTranslationKey } from "@/lib/ui-i18n/translations";
 import type { Contact, Template } from "@/lib/db/schema";
+
+type TemplateListItem = Pick<
+  Template,
+  "id" | "name" | "subject" | "preheader" | "status" | "createdAt" | "updatedAt"
+> & { blockCount?: number; blocks?: string };
 import { deriveNoReplyEmail, formatFromEmail } from "@/lib/resend";
 import { cn, formatDate } from "@/lib/utils";
 import { apiFetch } from "@/lib/api-fetch";
@@ -62,7 +67,7 @@ export default function CampaignsPage() {
   const t = useT();
   const { locale } = useLocale();
   const [campaigns, setCampaigns] = useState<CampaignRow[]>([]);
-  const [templates, setTemplates] = useState<Template[]>([]);
+  const [templates, setTemplates] = useState<TemplateListItem[]>([]);
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
   const [form, setForm] = useState({
@@ -77,16 +82,13 @@ export default function CampaignsPage() {
   const [historyTab, setHistoryTab] = useState<"active" | "archived">("active");
 
   async function load() {
-    const [c, t, contactsRes] = await Promise.all([
-      apiFetch("/api/campaigns?includeArchived=true").then((r) => r.json()),
-      apiFetch("/api/templates").then((r) => r.json()),
-      apiFetch("/api/contacts").then((r) => r.json()),
-    ]);
-    setCampaigns(c);
-    setTemplates(t);
-    setContacts(contactsRes);
-    if (t.length > 0 && !form.templateId) {
-      setForm((f) => ({ ...f, templateId: t[0].id }));
+    const data = await apiFetch("/api/campaigns/bootstrap").then((r) => r.json());
+    setCampaigns(data.campaigns ?? []);
+    setTemplates(data.templates ?? []);
+    setContacts(data.contacts ?? []);
+    const tpl = data.templates ?? [];
+    if (tpl.length > 0 && !form.templateId) {
+      setForm((f) => ({ ...f, templateId: tpl[0].id }));
     }
     setLoading(false);
   }
@@ -94,19 +96,16 @@ export default function CampaignsPage() {
   useEffect(() => {
     let cancelled = false;
     void (async () => {
-      const [c, tpl, contactsRes, senderDefaults] = await Promise.all([
-        apiFetch("/api/campaigns?includeArchived=true").then((r) => r.json()),
-        apiFetch("/api/templates").then((r) => r.json()),
-        apiFetch("/api/contacts").then((r) => r.json()),
-        apiFetch("/api/campaigns/sender-defaults").then((r) => r.json()),
-      ]);
+      const data = await apiFetch("/api/campaigns/bootstrap").then((r) => r.json());
       if (cancelled) return;
-      setCampaigns(c);
-      setTemplates(tpl);
-      setContacts(contactsRes);
+      setCampaigns(data.campaigns ?? []);
+      setTemplates(data.templates ?? []);
+      setContacts(data.contacts ?? []);
+      const tpl = data.templates ?? [];
       if (tpl.length > 0) {
         setForm((f) => (f.templateId ? f : { ...f, templateId: tpl[0].id }));
       }
+      const senderDefaults = data.senderDefaults;
       if (senderDefaults?.email) {
         setSenders((s) => ({
           ...s,

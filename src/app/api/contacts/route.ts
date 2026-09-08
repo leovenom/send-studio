@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { z } from "zod";
+import { jsonList } from "@/lib/api-list-response";
 import { db } from "@/lib/db";
 import { contacts } from "@/lib/db/schema";
 
@@ -16,7 +17,7 @@ const schema = z.object({
 
 export async function GET() {
   const all = await db.select().from(contacts).orderBy(contacts.createdAt);
-  return NextResponse.json(all);
+  return jsonList(all);
 }
 
 export async function POST(req: NextRequest) {

@@ -2,6 +2,25 @@
   "name": "send-studio",
   "version": "0.1.0",
   "private": true,
+  "description": "Multichannel CRM on Resend — block editor, Liquid i18n, campaigns & webhook analytics.",
+  "homepage": "https://send-studio.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/leovenom/send-studio.git"
+  },
+  "bugs": {
+    "url": "https://github.com/leovenom/send-studio/issues"
+  },
+  "keywords": [
+    "resend",
+    "nextjs",
+    "crm",
+    "email",
+    "typescript",
+    "turso",
+    "liquid",
+    "portfolio"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -13,7 +32,8 @@
     "validate:i18n": "npx tsx scripts/validate-i18n.ts",
     "simulate:webhook": "npx tsx scripts/simulate-webhook.ts",
     "check:analytics": "npx tsx scripts/check-analytics.ts",
-    "db:push": "drizzle-kit push"
+    "db:push": "drizzle-kit push",
+    "github:polish": "bash scripts/github-polish.sh"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

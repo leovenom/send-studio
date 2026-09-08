@@ -59,6 +59,12 @@ function eventsChartHeight(pointCount: number, variant: "default" | "compact") {
   return 280;
 }
 
+function yAxisWidthForCounts(values: number[]) {
+  const max = Math.max(0, ...values);
+  const digits = max > 0 ? String(max).length : 1;
+  return Math.max(32, digits * 10 + 14);
+}
+
 export function EventsChart({
   data,
   variant = "default",
@@ -94,6 +100,7 @@ export function EventsChart({
 
   const height = eventsChartHeight(data.length, variant);
   const maxBarSize = data.length <= 2 ? 64 : data.length <= 5 ? 52 : 48;
+  const yAxisWidth = yAxisWidthForCounts(data.map((row) => row.count));
 
   return (
     <div className={compact ? "space-y-3" : undefined}>
@@ -121,7 +128,7 @@ export function EventsChart({
       <ResponsiveContainer width="100%" height={height}>
         <BarChart
           data={data}
-          margin={{ top: 4, right: 4, left: -16, bottom: 0 }}
+          margin={{ top: 8, right: 8, left: 0, bottom: 4 }}
           barCategoryGap={data.length <= 3 ? "18%" : "12%"}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
@@ -142,7 +149,8 @@ export function EventsChart({
             axisLine={false}
             tickLine={false}
             allowDecimals={false}
-            width={28}
+            width={yAxisWidth}
+            tickMargin={6}
           />
           <Tooltip content={<ChartTooltip locale={locale} t={t} />} />
           <Bar dataKey="count" fill="#8ec5ff" radius={[6, 6, 0, 0]} maxBarSize={maxBarSize} />
@@ -188,7 +196,7 @@ export function BotHumanChart({
 
   return (
     <ResponsiveContainer width="100%" height={240}>
-      <BarChart data={data} layout="vertical" margin={{ left: 0, right: 16 }}>
+      <BarChart data={data} layout="vertical" margin={{ left: 4, right: 16, top: 4, bottom: 4 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
         <XAxis
           type="number"
@@ -251,7 +259,7 @@ export function FunnelChart({
 
   return (
     <ResponsiveContainer width="100%" height={240}>
-      <BarChart data={data} layout="vertical" margin={{ left: 0, right: 16 }}>
+      <BarChart data={data} layout="vertical" margin={{ left: 4, right: 16, top: 4, bottom: 4 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
         <XAxis
           type="number"

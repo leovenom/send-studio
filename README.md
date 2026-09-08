@@ -127,7 +127,7 @@ turso db show send-studio --url
 turso db tokens create send-studio
 ```
 
-Set `DATABASE_URL`, `RESEND_*`, `STUDIO_ACCESS_TOKEN`, and `NEXT_PUBLIC_SITE_URL` on Vercel.  
+Set `DATABASE_URL`, `RESEND_*`, `STUDIO_ACCESS_TOKEN`, and `SITE_URL` on Vercel.  
 Webhook endpoint: `https://your-app.vercel.app/api/webhooks/resend`
 
 ---

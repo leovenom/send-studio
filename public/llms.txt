@@ -20,4 +20,4 @@ Send Studio is a Next.js application for managing contacts, designing email temp
 
 ## Contact
 
-Configure `NEXT_PUBLIC_SITE_URL` for your deployment domain.
+Configure `SITE_URL` for your deployment domain.

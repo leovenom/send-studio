@@ -22,7 +22,7 @@ Set in Vercel dashboard for **Production** (and **Preview** if you test previews
 | `RESEND_API_KEY` | For email | |
 | `RESEND_FROM_EMAIL` | For email | Verified domain |
 | `RESEND_WEBHOOK_SECRET` | **Yes (prod)** | From Resend webhook; Svix verification |
-| `NEXT_PUBLIC_SITE_URL` | Recommended | `https://your-domain.com` — honeypot + OG |
+| `SITE_URL` | Recommended | `https://your-domain.com` — honeypot + OG (Config, server-only) |
 | `OPENAI_API_KEY` | Optional | AI template generation |
 | `OPENAI_MODEL` | Optional | Default `gpt-4o-mini` |
 | `WHATSAPP_TOKEN` | Optional | |

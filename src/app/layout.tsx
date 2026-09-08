@@ -6,6 +6,7 @@ import { ThemeInitScript } from "@/components/theme/theme-init-script";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { JsonLd } from "@/components/seo/json-ld";
 import { getRootStructuredData } from "@/lib/seo/structured-data";
+import { createDefaultOgMetadata } from "@/lib/seo/metadata";
 import { getSiteUrl, siteConfig } from "@/lib/site";
 import { THEME_STORAGE_KEY, parseTheme } from "@/lib/theme-storage";
 import { LOCALE_STORAGE_KEY, parseUiLocale } from "@/lib/ui-i18n/locale-storage";
@@ -40,18 +41,7 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  openGraph: {
-    type: "website",
-    locale: siteConfig.locale,
-    siteName: siteConfig.name,
-    title: siteConfig.title,
-    description: siteConfig.description,
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: siteConfig.title,
-    description: siteConfig.description,
-  },
+  ...createDefaultOgMetadata(),
   icons: {
     icon: [{ url: "/icon", type: "image/png" }],
   },

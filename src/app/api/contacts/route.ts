@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 import { jsonList } from "@/lib/api-list-response";
+import { getContactsList, invalidateListCache, LIST_CACHE_TAGS } from "@/lib/list-queries";
 import { db } from "@/lib/db";
 import { contacts } from "@/lib/db/schema";
 
@@ -16,8 +17,7 @@ const schema = z.object({
 });
 
 export async function GET() {
-  const all = await db.select().from(contacts).orderBy(contacts.createdAt);
-  return jsonList(all);
+  return jsonList(await getContactsList());
 }
 
 export async function POST(req: NextRequest) {
@@ -35,5 +35,6 @@ export async function POST(req: NextRequest) {
   });
 
   const [created] = await db.select().from(contacts).where(eq(contacts.id, id));
+  invalidateListCache(LIST_CACHE_TAGS.contacts, LIST_CACHE_TAGS.bootstrap);
   return NextResponse.json(created, { status: 201 });
 }

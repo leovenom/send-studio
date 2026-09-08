@@ -5,6 +5,7 @@ import { z } from "zod";
 import { parseContactsCsv } from "@/lib/contacts/import-csv";
 import { db } from "@/lib/db";
 import { contacts } from "@/lib/db/schema";
+import { invalidateListCache, LIST_CACHE_TAGS } from "@/lib/list-queries";
 import { enforceRateLimit } from "@/lib/rate-limit";
 
 const bodySchema = z.object({
@@ -89,6 +90,10 @@ export async function POST(req: NextRequest) {
       errors.push({ line: 0, message: `Falha ao importar ${row.email}` });
       skipped++;
     }
+  }
+
+  if (imported > 0 || updated > 0) {
+    invalidateListCache(LIST_CACHE_TAGS.contacts, LIST_CACHE_TAGS.bootstrap);
   }
 
   return NextResponse.json({

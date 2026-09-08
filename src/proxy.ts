@@ -20,7 +20,8 @@ export function proxy(request: NextRequest) {
 
   const response = NextResponse.next();
 
-  if (isStudioAuthRequired()) {
+  // GET list endpoints set their own short private cache; avoid overriding with no-store.
+  if (isStudioAuthRequired() && request.method !== "GET") {
     response.headers.set("Cache-Control", "no-store");
   }
 

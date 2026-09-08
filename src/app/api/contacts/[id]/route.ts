@@ -3,6 +3,7 @@ import { eq, and, ne } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { contacts } from "@/lib/db/schema";
+import { invalidateListCache, LIST_CACHE_TAGS } from "@/lib/list-queries";
 
 const patchSchema = z.object({
   email: z.string().email().optional(),
@@ -24,6 +25,7 @@ export async function DELETE(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
   await db.delete(contacts).where(eq(contacts.id, id));
+  invalidateListCache(LIST_CACHE_TAGS.contacts, LIST_CACHE_TAGS.bootstrap);
   return NextResponse.json({ ok: true });
 }
 
@@ -58,5 +60,6 @@ export async function PATCH(
 
   await db.update(contacts).set(updates).where(eq(contacts.id, id));
   const [updated] = await db.select().from(contacts).where(eq(contacts.id, id));
+  invalidateListCache(LIST_CACHE_TAGS.contacts, LIST_CACHE_TAGS.bootstrap);
   return NextResponse.json(updated);
 }

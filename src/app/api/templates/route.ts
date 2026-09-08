@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { desc, eq, sql } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 import { BLOCK_TYPES } from "@/lib/blocks";
 import { jsonList } from "@/lib/api-list-response";
+import {
+  getTemplatesList,
+  invalidateListCache,
+  LIST_CACHE_TAGS,
+} from "@/lib/list-queries";
 import { db } from "@/lib/db";
 import { templates } from "@/lib/db/schema";
 
@@ -30,20 +35,7 @@ export async function GET(req: NextRequest) {
     return jsonList(filtered);
   }
 
-  const rows = await db
-    .select({
-      id: templates.id,
-      name: templates.name,
-      subject: templates.subject,
-      preheader: templates.preheader,
-      status: templates.status,
-      createdAt: templates.createdAt,
-      updatedAt: templates.updatedAt,
-      blockCount: sql<number>`coalesce(json_array_length(${templates.blocks}), 0)`.mapWith(Number),
-    })
-    .from(templates)
-    .orderBy(desc(templates.updatedAt));
-
+  const rows = await getTemplatesList();
   const filtered = includeArchived ? rows : rows.filter((t) => t.status !== "archived");
   return jsonList(filtered);
 }
@@ -64,5 +56,6 @@ export async function POST(req: NextRequest) {
   });
 
   const [created] = await db.select().from(templates).where(eq(templates.id, id));
+  invalidateListCache(LIST_CACHE_TAGS.templates, LIST_CACHE_TAGS.bootstrap);
   return NextResponse.json(created, { status: 201 });
 }

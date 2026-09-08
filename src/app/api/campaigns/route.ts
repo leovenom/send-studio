@@ -7,8 +7,6 @@ import { db } from "@/lib/db";
 import { campaigns, contacts, emails, messages, templates } from "@/lib/db/schema";
 import { blocksToPlainText, blocksToTelegramHtml } from "@/lib/messaging/blocks-to-text";
 import {
-  formatCampaignSenderSummary,
-  parseCampaignSender,
   resolveCampaignSender,
   type EmailCampaignSender,
 } from "@/lib/messaging/campaign-sender";
@@ -19,35 +17,15 @@ import { createTrackingToken } from "@/lib/tracking";
 import type { EmailBlock } from "@/lib/blocks";
 import { enforceRateLimit } from "@/lib/rate-limit";
 import { jsonList } from "@/lib/api-list-response";
+import { getCampaignsList, invalidateListCache, LIST_CACHE_TAGS } from "@/lib/list-queries";
 
 const channelSchema = z.enum(["email", "whatsapp", "telegram"]);
 
 export async function GET(req: NextRequest) {
   const includeArchived = req.nextUrl.searchParams.get("includeArchived") === "true";
-  const all = await db
-    .select({
-      id: campaigns.id,
-      name: campaigns.name,
-      channel: campaigns.channel,
-      status: campaigns.status,
-      archivedAt: campaigns.archivedAt,
-      sentAt: campaigns.sentAt,
-      createdAt: campaigns.createdAt,
-      sender: campaigns.sender,
-      templateName: templates.name,
-      templateSubject: templates.subject,
-    })
-    .from(campaigns)
-    .innerJoin(templates, eq(campaigns.templateId, templates.id))
-    .orderBy(campaigns.createdAt);
-
+  const all = await getCampaignsList();
   const filtered = includeArchived ? all : all.filter((c) => !c.archivedAt);
-  return jsonList(
-    filtered.map((c) => ({
-      ...c,
-      senderSummary: formatCampaignSenderSummary(parseCampaignSender(c.sender)),
-    })),
-  );
+  return jsonList(filtered);
 }
 
 export async function POST(req: NextRequest) {
@@ -180,6 +158,8 @@ export async function POST(req: NextRequest) {
     .update(campaigns)
     .set({ status: campaignStatus, sentAt: new Date().toISOString() })
     .where(eq(campaigns.id, campaignId));
+
+  invalidateListCache(LIST_CACHE_TAGS.campaigns, LIST_CACHE_TAGS.bootstrap);
 
   return NextResponse.json({ campaignId, channel: body.channel, results }, { status: 201 });
 }

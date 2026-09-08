@@ -4,6 +4,7 @@ import { z } from "zod";
 import { BLOCK_TYPES } from "@/lib/blocks";
 import { db } from "@/lib/db";
 import { campaigns, templates } from "@/lib/db/schema";
+import { invalidateListCache, LIST_CACHE_TAGS } from "@/lib/list-queries";
 
 export async function GET(
   _req: NextRequest,
@@ -48,6 +49,7 @@ export async function PATCH(
     .where(eq(templates.id, id));
 
   const [updated] = await db.select().from(templates).where(eq(templates.id, id));
+  invalidateListCache(LIST_CACHE_TAGS.templates, LIST_CACHE_TAGS.bootstrap);
   return NextResponse.json(updated);
 }
 
@@ -72,5 +74,6 @@ export async function DELETE(
   }
 
   await db.delete(templates).where(eq(templates.id, id));
+  invalidateListCache(LIST_CACHE_TAGS.templates, LIST_CACHE_TAGS.bootstrap);
   return NextResponse.json({ ok: true });
 }

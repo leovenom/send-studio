@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { db } from "@/lib/db";
 import { templates } from "@/lib/db/schema";
+import { invalidateListCache, LIST_CACHE_TAGS } from "@/lib/list-queries";
 
 export async function POST(
   _req: NextRequest,
@@ -26,5 +27,6 @@ export async function POST(
   });
 
   const [created] = await db.select().from(templates).where(eq(templates.id, newId));
+  invalidateListCache(LIST_CACHE_TAGS.templates, LIST_CACHE_TAGS.bootstrap);
   return NextResponse.json(created, { status: 201 });
 }

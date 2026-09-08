@@ -210,6 +210,19 @@ async function rebrandLegacyNames() {
   if (updated > 0) {
     console.log(`Rebrand: ${updated} campo(s) atualizado(s) (${from} → ${to}).`);
   }
+
+  await client.execute(
+    `CREATE INDEX IF NOT EXISTS idx_contacts_created_at ON contacts(created_at)`,
+  );
+  await client.execute(
+    `CREATE INDEX IF NOT EXISTS idx_templates_updated_at ON templates(updated_at)`,
+  );
+  await client.execute(
+    `CREATE INDEX IF NOT EXISTS idx_templates_status ON templates(status)`,
+  );
+  await client.execute(
+    `CREATE INDEX IF NOT EXISTS idx_campaigns_created_at ON campaigns(created_at)`,
+  );
 }
 
 migrate().catch(console.error);

@@ -1,11 +1,10 @@
 import { createClient } from "@libsql/client";
 import { nanoid } from "nanoid";
 import { EXAMPLE_CONTENT_BLOCK } from "../src/lib/i18n";
+import { getDatabaseConfig } from "../src/lib/db/config";
 
-const client = createClient({
-  url: process.env.DATABASE_URL ?? "file:local.db",
-  authToken: process.env.DATABASE_AUTH_TOKEN,
-});
+const { url, authToken } = getDatabaseConfig();
+const client = createClient({ url, authToken });
 
 const DEMO_PREFIX = "Demo —";
 const force = process.argv.includes("--force");

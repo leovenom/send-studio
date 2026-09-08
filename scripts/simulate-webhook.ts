@@ -3,6 +3,7 @@
  * Usage: npm run simulate:webhook [-- --base http://localhost:3000]
  */
 import { createClient } from "@libsql/client";
+import { getDatabaseConfig } from "../src/lib/db/config";
 
 const BASE = process.env.BASE ?? "http://localhost:3000";
 const args = process.argv.slice(2);
@@ -21,10 +22,8 @@ async function main() {
   let resendId = emailIdArg;
 
   if (!resendId) {
-    const client = createClient({
-      url: process.env.DATABASE_URL ?? "file:local.db",
-      authToken: process.env.DATABASE_AUTH_TOKEN,
-    });
+    const { url, authToken } = getDatabaseConfig();
+    const client = createClient({ url, authToken });
     const result = await client.execute(
       "SELECT resend_id FROM emails WHERE resend_id IS NOT NULL LIMIT 1",
     );

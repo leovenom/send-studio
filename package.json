@@ -1,0 +1,49 @@
+{
+  "name": "send-studio",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "db:migrate": "npx tsx scripts/migrate.ts",
+    "db:seed-demo": "npx tsx scripts/seed-demo-campaign.ts",
+    "db:seed-demo:force": "npx tsx scripts/seed-demo-campaign.ts -- --force",
+    "validate:i18n": "npx tsx scripts/validate-i18n.ts",
+    "simulate:webhook": "npx tsx scripts/simulate-webhook.ts",
+    "check:analytics": "npx tsx scripts/check-analytics.ts",
+    "db:push": "drizzle-kit push"
+  },
+  "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@libsql/client": "^0.18.0",
+    "clsx": "^2.1.1",
+    "drizzle-orm": "^0.45.2",
+    "liquidjs": "^10.29.0",
+    "lucide-react": "^1.43.0",
+    "nanoid": "^6.0.1",
+    "next": "16.3.4",
+    "openai": "^7.10.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "recharts": "^3.10.1",
+    "resend": "^6.26.0",
+    "tailwind-merge": "^3.6.0",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.10",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.4",
+    "tailwindcss": "^4",
+    "tsx": "^4.23.13",
+    "typescript": "^5"
+  }
+}

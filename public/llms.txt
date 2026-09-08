@@ -1,0 +1,23 @@
+# Send Studio
+
+> Email CRM with block template editor, multi-channel campaigns, and Resend analytics.
+
+Send Studio is a Next.js application for managing contacts, designing email templates with drag-and-drop blocks and Liquid, sending campaigns via Resend / WhatsApp / Telegram, and tracking delivery events.
+
+## Public pages
+
+- `/` — Dashboard
+- `/contacts` — Contact CRM and CSV import
+- `/templates` — Template library
+- `/templates/generate` — AI template generation
+- `/campaigns` — Campaign sending
+- `/analytics` — Email event analytics
+
+## Tech
+
+- Next.js App Router, React, Tailwind CSS
+- Turso (SQLite), Resend API, Liquid templates
+
+## Contact
+
+Configure `NEXT_PUBLIC_SITE_URL` for your deployment domain.

@@ -82,8 +82,8 @@ Editor blocks → HTML (Liquid) → Resend API → webhook → email_events → 
 ## Quick start (2 minutes)
 
 ```bash
-git clone https://github.com/leovenom/resend-studio.git
-cd resend-studio && npm install
+git clone https://github.com/leovenom/send-studio.git
+cd send-studio && npm install
 
 cp .env.example .env.local
 npm run db:migrate
@@ -128,7 +128,7 @@ turso db tokens create send-studio
 ```
 
 Set `DATABASE_URL`, `RESEND_*`, `STUDIO_ACCESS_TOKEN`, and `SITE_URL` on Vercel.  
-Webhook endpoint: `https://your-app.vercel.app/api/webhooks/resend`
+Webhook endpoint: `https://send-studio.vercel.app/api/webhooks/resend`
 
 ---
 
@@ -155,7 +155,7 @@ Webhook endpoint: `https://your-app.vercel.app/api/webhooks/resend`
 ## Contact
 
 - GitHub: [@leovenom](https://github.com/leovenom)  
-- Project: _add repo URL if different_
+- Repo: [github.com/leovenom/send-studio](https://github.com/leovenom/send-studio)
 
 ---
 

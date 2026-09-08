@@ -1,11 +1,31 @@
 /** Site-wide config for SEO, canonical URLs, and Open Graph. */
 
+const LOCAL_FALLBACK = "http://localhost:3000";
+
+function isValidSiteUrl(value: string): boolean {
+  if (!value || /[<>]/.test(value)) return false;
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 export function getSiteUrl(): string {
-  const raw =
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    process.env.NEXT_PUBLIC_APP_URL ??
-    "http://localhost:3000";
-  return raw.replace(/\/$/, "");
+  const candidates = [
+    process.env.NEXT_PUBLIC_SITE_URL,
+    process.env.NEXT_PUBLIC_APP_URL,
+    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined,
+  ];
+
+  for (const raw of candidates) {
+    if (!raw) continue;
+    const normalized = raw.replace(/\/$/, "");
+    if (isValidSiteUrl(normalized)) return normalized;
+  }
+
+  return LOCAL_FALLBACK;
 }
 
 export const siteConfig = {

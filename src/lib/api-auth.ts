@@ -11,7 +11,9 @@ const PUBLIC_API_PREFIXES = [
 ] as const;
 
 export function getStudioAccessToken(): string | undefined {
-  const token = process.env.STUDIO_ACCESS_TOKEN?.trim();
+  const token =
+    process.env.STUDIO_ACCESS_TOKEN?.trim() ||
+    process.env.SEND_STUDIO_API_TOKEN?.trim();
   return token || undefined;
 }
 
